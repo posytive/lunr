@@ -163,6 +163,11 @@ abstract class DatabaseDMLQueryBuilder implements DMLQueryBuilderInterface
     protected $connector;
 
     /**
+     * SQL Query part: Existence and type of bracket to group conditions
+     * @var String
+     */
+    protected $bracket;
+    /**
      * SQL Query part: Boolean identifying if we are joining tables
      * @var Boolean
      */
@@ -194,6 +199,7 @@ abstract class DatabaseDMLQueryBuilder implements DMLQueryBuilderInterface
         $this->values           = '';
         $this->select_statement = '';
         $this->compound         = '';
+        $this->bracket          = '';
         $this->is_join          = FALSE;
     }
 
@@ -216,6 +222,7 @@ abstract class DatabaseDMLQueryBuilder implements DMLQueryBuilderInterface
         unset($this->order_by);
         unset($this->limit);
         unset($this->compound);
+        unset($this->bracket);
         unset($this->connector);
         unset($this->into);
         unset($this->insert_mode);
@@ -610,6 +617,11 @@ abstract class DatabaseDMLQueryBuilder implements DMLQueryBuilderInterface
         {
             $this->$condition .= ' AND';
         }
+        
+        if ($this->bracket === '(') {
+            $this->$condition .= ' ' . $this->bracket;
+            $this->bracket = '';
+        }
 
         $this->$condition .= " $left $operator $right";
     }
@@ -763,6 +775,42 @@ abstract class DatabaseDMLQueryBuilder implements DMLQueryBuilderInterface
         }
 
         return $hints;
+    }
+    
+    /**
+     * Set a open or closed bracket to group conditions.
+     *
+     * @param String $bracket Open or closed bracket to set
+     *
+     * @return void
+     */
+    protected function sql_bracket($bracket)
+    {
+        $this->bracket = $bracket;
+    }
+    
+    
+    /**
+     * Open the bracket for the sql condition.
+     *
+     * @return void
+     */
+    public function sql_bracket_open()
+    {
+        $this->sql_bracket('(');
+    }
+    
+    /**
+     * Close the bracket for the sql condition.
+     *
+     * @return void
+     */
+    public function sql_bracket_close()
+    {
+        $this->sql_bracket(')');
+        $condition = ($this->is_join) ? 'join' : 'where';
+	$this->$condition .= ' ' . $this->bracket;
+        $this->bracket = '';
     }
 
 }
