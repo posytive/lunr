@@ -1150,44 +1150,44 @@ class DatabaseDMLQueryBuilderBaseTest extends DatabaseDMLQueryBuilderTest
     }
 
     /**
-     * Test getting a select query with grouped conditions.
-     *
-     * @covers  Lunr\Gravity\Database\DatabaseDMLQueryBuilder::sql_condition
-     */
+    * Test getting a select query with grouped conditions.
+    *
+    * @covers Lunr\Gravity\Database\DatabaseDMLQueryBuilder::sql_condition
+    */
     public function testGetGroupedSQLConditionsQuery()
     {
         $method_cond = $this->builder_reflection->getMethod('sql_condition');
         $method_cond->setAccessible(TRUE);
 
-        $arguments = array("a","b","=");
+        $arguments = array('a', 'b', '=');
 
-        $bracket = $this->builder_reflection->getProperty('bracket');
-        $bracket->setAccessible(TRUE);
-        $bracket->setValue($this->builder, '(');
+        $method_br_o = $this->builder_reflection->getMethod('sql_parentheses_open');
+        $method_br_o->setAccessible(TRUE);
+        $method_br_o->invoke($this->builder);
 
         $condition = $this->builder_reflection->getProperty('where');
         $condition->setAccessible(TRUE);
 
-        $string  = 'WHERE ( a = b';
+        $string = 'WHERE ( a = b';
         $method_cond->invokeArgs($this->builder, $arguments);
         $this->assertEquals($string, $condition->getValue($this->builder));
     }
 
     /**
-     * Test closing the bracket for grouped conditions.
+     * Test closing the parentheses for grouped conditions.
      *
-     * @covers  Lunr\Gravity\Database\DatabaseDMLQueryBuilder::sql_bracket_close
+     * @covers Lunr\Gravity\Database\DatabaseDMLQueryBuilder::sql_parentheses_close
      */
     public function testCloseGroupedSQLCondition()
     {
-        $method_br_c = $this->builder_reflection->getMethod('sql_bracket_close');
+        $method_br_c = $this->builder_reflection->getMethod('sql_parentheses_close');
         $method_br_c->setAccessible(TRUE);
 
         $condition = $this->builder_reflection->getProperty('where');
         $condition->setAccessible(TRUE);
 
         $method_br_c->invoke($this->builder);
-        $string = " )";
+        $string = ' )';
         $this->assertEquals($string, $condition->getValue($this->builder));
     }
 
