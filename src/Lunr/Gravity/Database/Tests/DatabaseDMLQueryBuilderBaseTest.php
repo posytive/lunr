@@ -1148,7 +1148,7 @@ class DatabaseDMLQueryBuilderBaseTest extends DatabaseDMLQueryBuilderTest
         $string = '(SELECT col FROM table) UNION (SELECT col2 FROM table2)';
         $this->assertEquals($string, $this->builder->get_select_query());
     }
-    
+
     /**
      * Test getting a select query with grouped conditions.
      *
@@ -1160,19 +1160,19 @@ class DatabaseDMLQueryBuilderBaseTest extends DatabaseDMLQueryBuilderTest
         $method_cond->setAccessible(TRUE);
 
         $arguments = array("a","b","=");
-        
+
         $bracket = $this->builder_reflection->getProperty('bracket');
         $bracket->setAccessible(TRUE);
         $bracket->setValue($this->builder, '(');
-        
+
         $condition = $this->builder_reflection->getProperty('where');
         $condition->setAccessible(TRUE);
-        
+
         $string  = 'WHERE ( a = b';
         $method_cond->invokeArgs($this->builder, $arguments);
         $this->assertEquals($string, $condition->getValue($this->builder));
     }
-    
+
     /**
      * Test closing the bracket for grouped conditions.
      *
@@ -1182,10 +1182,10 @@ class DatabaseDMLQueryBuilderBaseTest extends DatabaseDMLQueryBuilderTest
     {
         $method_br_c = $this->builder_reflection->getMethod('sql_bracket_close');
         $method_br_c->setAccessible(TRUE);
-        
+
         $condition = $this->builder_reflection->getProperty('where');
         $condition->setAccessible(TRUE);
-        
+
         $method_br_c->invoke($this->builder);
         $string = " )";
         $this->assertEquals($string, $condition->getValue($this->builder));
