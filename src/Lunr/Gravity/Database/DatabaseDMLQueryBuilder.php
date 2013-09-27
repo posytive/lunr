@@ -166,7 +166,7 @@ abstract class DatabaseDMLQueryBuilder implements DMLQueryBuilderInterface
      * SQL Query part: Existence and type of parentheses to group conditions
      * @var String
      */
-    protected $parentheses;
+    protected $group;
     /**
      * SQL Query part: Boolean identifying if we are joining tables
      * @var Boolean
@@ -199,7 +199,7 @@ abstract class DatabaseDMLQueryBuilder implements DMLQueryBuilderInterface
         $this->values           = '';
         $this->select_statement = '';
         $this->compound         = '';
-        $this->parentheses      = '';
+        $this->group            = '';
         $this->is_join          = FALSE;
     }
 
@@ -222,7 +222,7 @@ abstract class DatabaseDMLQueryBuilder implements DMLQueryBuilderInterface
         unset($this->order_by);
         unset($this->limit);
         unset($this->compound);
-        unset($this->parentheses);
+        unset($this->group);
         unset($this->connector);
         unset($this->into);
         unset($this->insert_mode);
@@ -618,10 +618,10 @@ abstract class DatabaseDMLQueryBuilder implements DMLQueryBuilderInterface
             $this->$condition .= ' AND';
         }
 
-        if ($this->parentheses === '(')
+        if (strtolower($this->group) === $condition && $condition !== '')
         {
-            $this->$condition .= ' ' . $this->parentheses;
-            $this->parentheses = '';
+            $this->$condition .= ' (';
+            $this->group = '';
         }
 
         $this->$condition .= " $left $operator $right";
@@ -783,9 +783,10 @@ abstract class DatabaseDMLQueryBuilder implements DMLQueryBuilderInterface
      *
      * @return void
      */
-    public function sql_parentheses_open()
+    public function sql_group_start($condition)
     {
-        $this->parentheses = '(';
+        $condition = (strtoupper($condition) === 'ON') ? 'join' : strtolower($condition);
+        $this->group = $condition;
     }
 
     /**
@@ -793,9 +794,9 @@ abstract class DatabaseDMLQueryBuilder implements DMLQueryBuilderInterface
      *
      * @return void
      */
-    public function sql_parentheses_close()
+    public function sql_group_end($condition)
     {
-        $condition         = ( $this->is_join ) ? 'join' : 'where';
+        $condition = (strtoupper($condition) === 'ON') ? 'join' : strtolower($condition);
         $this->$condition .= ' )';
     }
 

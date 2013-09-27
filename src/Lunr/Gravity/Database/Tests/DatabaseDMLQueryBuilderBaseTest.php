@@ -1150,20 +1150,38 @@ class DatabaseDMLQueryBuilderBaseTest extends DatabaseDMLQueryBuilderTest
     }
 
     /**
-    * Test getting a select query with grouped conditions.
+    * Test grouping condition WHERE.
+    *
+    * @covers Lunr\Gravity\Database\DatabaseDMLQueryBuilder::sql_group_start
+    */
+    public function testOpenGroupWhere()
+    {
+        $method_br_o = $this->builder_reflection->getMethod('sql_group_start');
+        $method_br_o->setAccessible(TRUE);
+        $method_br_o->invokeArgs($this->builder,array('where'));
+        
+        $group = $this->builder_reflection->getProperty('group');
+        $group->setAccessible(TRUE);
+
+        $string = 'where';
+        $this->assertEquals($string, $group->getValue($this->builder));
+    }
+
+    /**
+    * Test getting a select query with grouped condition WHERE.
     *
     * @covers Lunr\Gravity\Database\DatabaseDMLQueryBuilder::sql_condition
     */
-    public function testGetGroupedSQLConditionsQuery()
+    public function testGroupedSQLConditionWhere()
     {
         $method_cond = $this->builder_reflection->getMethod('sql_condition');
         $method_cond->setAccessible(TRUE);
 
         $arguments = array('a', 'b', '=');
-
-        $method_br_o = $this->builder_reflection->getMethod('sql_parentheses_open');
-        $method_br_o->setAccessible(TRUE);
-        $method_br_o->invoke($this->builder);
+        
+        $group = $this->builder_reflection->getProperty('group');
+        $group->setAccessible(TRUE);
+        $group->setValue($this->builder, 'where');
 
         $condition = $this->builder_reflection->getProperty('where');
         $condition->setAccessible(TRUE);
@@ -1174,19 +1192,142 @@ class DatabaseDMLQueryBuilderBaseTest extends DatabaseDMLQueryBuilderTest
     }
 
     /**
-     * Test closing the parentheses for grouped conditions.
+     * Test closing the parentheses for grouped condition WHERE.
      *
-     * @covers Lunr\Gravity\Database\DatabaseDMLQueryBuilder::sql_parentheses_close
+     * @covers Lunr\Gravity\Database\DatabaseDMLQueryBuilder::sql_group_end
      */
-    public function testCloseGroupedSQLCondition()
+    public function testCloseGroupWhere()
     {
-        $method_br_c = $this->builder_reflection->getMethod('sql_parentheses_close');
+        $method_br_c = $this->builder_reflection->getMethod('sql_group_end');
         $method_br_c->setAccessible(TRUE);
 
         $condition = $this->builder_reflection->getProperty('where');
         $condition->setAccessible(TRUE);
+        $condition->setValue($this->builder, '');
 
-        $method_br_c->invoke($this->builder);
+        $method_br_c->invokeArgs($this->builder, array('where'));
+        $string = ' )';
+        $this->assertEquals($string, $condition->getValue($this->builder));
+    }
+
+    /**
+    * Test grouping condition HAVING.
+    *
+    * @covers Lunr\Gravity\Database\DatabaseDMLQueryBuilder::sql_group_start
+    */
+    public function testOpenGroupHaving()
+    {
+        $method_br_o = $this->builder_reflection->getMethod('sql_group_start');
+        $method_br_o->setAccessible(TRUE);
+        $method_br_o->invokeArgs($this->builder,array('having'));
+        
+        $group = $this->builder_reflection->getProperty('group');
+        $group->setAccessible(TRUE);
+
+        $string = 'having';
+        $this->assertEquals($string, $group->getValue($this->builder));
+    }
+
+    /**
+    * Test getting a select query with grouped condition HAVING.
+    *
+    * @covers Lunr\Gravity\Database\DatabaseDMLQueryBuilder::sql_condition
+    */
+    public function testGroupedSQLConditionHaving()
+    {
+        $method_cond = $this->builder_reflection->getMethod('sql_condition');
+        $method_cond->setAccessible(TRUE);
+
+        $arguments = array('a', 'b', '=','HAVING');
+        
+        $group = $this->builder_reflection->getProperty('group');
+        $group->setAccessible(TRUE);
+        $group->setValue($this->builder, 'having');
+
+        $condition = $this->builder_reflection->getProperty('having');
+        $condition->setAccessible(TRUE);
+
+        $string = 'HAVING ( a = b';
+        $method_cond->invokeArgs($this->builder, $arguments);
+        $this->assertEquals($string, $condition->getValue($this->builder));
+    }
+
+    /**
+     * Test closing the parentheses for grouped condition HAVING.
+     *
+     * @covers Lunr\Gravity\Database\DatabaseDMLQueryBuilder::sql_group_end
+     */
+    public function testCloseGroupHaving()
+    {
+        $method_br_c = $this->builder_reflection->getMethod('sql_group_end');
+        $method_br_c->setAccessible(TRUE);
+
+        $condition = $this->builder_reflection->getProperty('having');
+        $condition->setAccessible(TRUE);
+        $condition->setValue($this->builder, '');
+
+        $method_br_c->invokeArgs($this->builder, array('having'));
+        $string = ' )';
+        $this->assertEquals($string, $condition->getValue($this->builder));
+    }
+
+    /**
+    * Test grouping condition ON.
+    *
+    * @covers Lunr\Gravity\Database\DatabaseDMLQueryBuilder::sql_group_start
+    */
+    public function testOpenGroupOn()
+    {
+        $method_br_o = $this->builder_reflection->getMethod('sql_group_start');
+        $method_br_o->setAccessible(TRUE);
+        $method_br_o->invokeArgs($this->builder,array('on'));
+        
+        $group = $this->builder_reflection->getProperty('group');
+        $group->setAccessible(TRUE);
+
+        $string = 'join';
+        $this->assertEquals($string, $group->getValue($this->builder));
+    }
+
+    /**
+    * Test getting a select query with grouped condition ON.
+    *
+    * @covers Lunr\Gravity\Database\DatabaseDMLQueryBuilder::sql_condition
+    */
+    public function testGroupedSQLConditionOn()
+    {
+        $method_cond = $this->builder_reflection->getMethod('sql_condition');
+        $method_cond->setAccessible(TRUE);
+
+        $arguments = array('a', 'b', '=','ON');
+        
+        $group = $this->builder_reflection->getProperty('group');
+        $group->setAccessible(TRUE);
+        $group->setValue($this->builder, 'join');
+
+        $condition = $this->builder_reflection->getProperty('join');
+        $condition->setAccessible(TRUE);
+
+        $string = 'ON ( a = b';
+        $method_cond->invokeArgs($this->builder, $arguments);
+        $this->assertEquals($string, $condition->getValue($this->builder));
+    }
+
+    /**
+     * Test closing the parentheses for grouped condition ON.
+     *
+     * @covers Lunr\Gravity\Database\DatabaseDMLQueryBuilder::sql_group_end
+     */
+    public function testCloseGroupOn()
+    {
+        $method_br_c = $this->builder_reflection->getMethod('sql_group_end');
+        $method_br_c->setAccessible(TRUE);
+
+        $condition = $this->builder_reflection->getProperty('join');
+        $condition->setAccessible(TRUE);
+        $condition->setValue($this->builder, '');
+
+        $method_br_c->invokeArgs($this->builder, array('on'));
         $string = ' )';
         $this->assertEquals($string, $condition->getValue($this->builder));
     }
