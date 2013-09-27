@@ -305,6 +305,17 @@ class MySQLDMLQueryBuilder extends DatabaseDMLQueryBuilder
     }
 
     /**
+     * Open ON group.
+     *
+     * @return MySQLDMLQueryBuilder $self Self reference
+     */
+    public function start_on_group()
+    {
+        $this->sql_group_start('on');
+        return $this;
+    }
+    
+    /**
      * Define ON part of a JOIN clause of the SQL statement.
      *
      * @param String $left     Left expression
@@ -384,7 +395,28 @@ class MySQLDMLQueryBuilder extends DatabaseDMLQueryBuilder
         $this->sql_condition($left, $right, $operator, 'ON');
         return $this;
     }
+    
+    /**
+     * Close ON group.
+     *
+     * @return MySQLDMLQueryBuilder $self Self reference
+     */
+    public function end_on_group()
+    {
+        $this->sql_group_end('on');
+        return $this;
+    }
 
+    /**
+     * Open WHERE group.
+     *
+     * @return MySQLDMLQueryBuilder $self Self reference
+     */
+    public function start_where_group()
+    {
+        $this->sql_group_start('where');
+        return $this;
+    }
     /**
      * Define WHERE clause of the SQL statement.
      *
@@ -467,6 +499,17 @@ class MySQLDMLQueryBuilder extends DatabaseDMLQueryBuilder
     }
 
     /**
+     * Close WHERE group.
+     *
+     * @return MySQLDMLQueryBuilder $self Self reference
+     */
+    public function end_where_group()
+    {
+        $this->sql_group_end('where');
+        return $this;
+    }
+
+    /**
      * Define GROUP BY clause of the SQL statement.
      *
      * @param String  $expr  Expression to group by
@@ -484,6 +527,17 @@ class MySQLDMLQueryBuilder extends DatabaseDMLQueryBuilder
             $this->group_by .= $direction;
         }
 
+        return $this;
+    }
+
+    /**
+     * Open HAVING group.
+     *
+     * @return MySQLDMLQueryBuilder $self Self reference
+     */
+    public function start_having_group()
+    {
+        $this->sql_group_start('having');
         return $this;
     }
 
@@ -565,6 +619,17 @@ class MySQLDMLQueryBuilder extends DatabaseDMLQueryBuilder
     {
         $operator = ($negate === FALSE) ? 'REGEXP' : 'NOT REGEXP';
         $this->sql_condition($left, $right, $operator, 'HAVING');
+        return $this;
+    }
+
+    /**
+     * Close HAVING group.
+     *
+     * @return MySQLDMLQueryBuilder $self Self reference
+     */
+    public function end_having_group()
+    {
+        $this->sql_group_end('having');
         return $this;
     }
 

@@ -31,6 +31,28 @@ class SQLite3DMLQueryBuilderConditionTest extends SQLite3DMLQueryBuilderTest
 {
 
     /**
+     * Test grouping of ON condition (start group).
+     *
+     * @covers  Lunr\Gravity\Database\MySQL\MySQLDMLQueryBuilder::start_on_group
+     */
+    public function testOpeningGroupOn()
+    {
+        $this->class->start_on_group();
+        $this->assertEquals('join', $this->get_reflection_property_value('group'));
+    }
+
+    /**
+     * Test grouping of ON condition (close group).
+     *
+     * @covers  Lunr\Gravity\Database\MySQL\MySQLDMLQueryBuilder::end_on_group
+     */
+    public function testClosingGroupOn()
+    {
+        $this->class->end_on_group();
+        $this->assertEquals(' )', $this->get_reflection_property_value('join'));
+    }
+
+    /**
      * Test specifying the on part of a query.
      *
      * @depends Lunr\Gravity\Database\Tests\DatabaseDMLQueryBuilderQueryPartsTest::testConditionCreatesSimpleStatement
@@ -236,6 +258,28 @@ class SQLite3DMLQueryBuilderConditionTest extends SQLite3DMLQueryBuilderTest
     }
 
     /**
+     * Test grouping of WHERE condition (start group).
+     *
+     * @covers  Lunr\Gravity\Database\MySQL\MySQLDMLQueryBuilder::start_where_group
+     */
+    public function testOpeningGroupWhere()
+    {
+        $this->class->start_where_group();
+        $this->assertEquals('where', $this->get_reflection_property_value('group'));
+    }
+
+    /**
+     * Test grouping of WHERE condition (close group).
+     *
+     * @covers  Lunr\Gravity\Database\MySQL\MySQLDMLQueryBuilder::end_where_group
+     */
+    public function testClosingGroupWhere()
+    {
+        $this->class->end_where_group();
+        $this->assertEquals(' )', $this->get_reflection_property_value('where'));
+    }
+
+    /**
      * Test specifying the where part of a query.
      *
      * @depends Lunr\Gravity\Database\Tests\DatabaseDMLQueryBuilderQueryPartsTest::testConditionCreatesSimpleStatement
@@ -438,6 +482,28 @@ class SQLite3DMLQueryBuilderConditionTest extends SQLite3DMLQueryBuilderTest
 
         $this->assertInstanceOf('Lunr\Gravity\Database\SQLite3\SQLite3DMLQueryBuilder', $return);
         $this->assertSame($this->class, $return);
+    }
+
+    /**
+     * Test grouping of HAVING condition (start group).
+     *
+     * @covers  Lunr\Gravity\Database\MySQL\MySQLDMLQueryBuilder::start_having_group
+     */
+    public function testOpeningGroupHaving()
+    {
+        $this->class->start_having_group();
+        $this->assertEquals('having', $this->get_reflection_property_value('group'));
+    }
+
+    /**
+     * Test grouping of HAVING condition (close group).
+     *
+     * @covers  Lunr\Gravity\Database\MySQL\MySQLDMLQueryBuilder::end_having_group
+     */
+    public function testClosingGroupHaving()
+    {
+        $this->class->end_having_group();
+        $this->assertEquals(' )', $this->get_reflection_property_value('having'));
     }
 
     /**
